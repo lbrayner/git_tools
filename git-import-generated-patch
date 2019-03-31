@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # set -x
 
@@ -8,13 +8,14 @@ print_usage() {
 	printf '\n%s\n' "${script_name} [-d FOLDER] -h"
 }
 
-origin="."
+# where the patches are
+directory="."
 
 while getopts ":d:h" opt
 do
     case ${opt} in
         d)
-            origin="${OPTARG}"
+            directory="${OPTARG}"
             ;;
         h)
             print_usage
@@ -28,4 +29,4 @@ do
 done
 shift $((OPTIND - 1))
 
-git am "${origin}"/*.patch
+git am "${directory}"/*.patch

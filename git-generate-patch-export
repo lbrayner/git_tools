@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # set -x
 
@@ -9,15 +9,14 @@ print_usage() {
 }
 
 generate_patch() {
-    outdir="${destination}"
+    outdir="${1}"
+    shift 1
     echo "${@}"
-    repo="."
-    cd "${repo}"
     init_commit=$(git rev-list --parents HEAD | egrep "^[a-f0-9]{40}$")
     first_commit=$(git -c log.abbrevCommit=false log "${@}" \
         | grep '^commit' | tail -1 | awk '{print $2}')
     commit="${first_commit}^"
-    if [ "${first_commit}" = "${init_commit}" ]
+    if [[ "${first_commit}" = "${init_commit}" ]]
     then
         git format-patch -1 -o "${outdir}" \
             ${init_commit} -- "${@}"
@@ -26,7 +25,7 @@ generate_patch() {
     git format-patch -o "${outdir}" "${commit}"..HEAD "${@}"
 }
 
-if [ ! ${#} -gt 0 ]
+if [[ ! ${#} -gt 0 ]]
 then
     print_usage
     exit 1
@@ -48,9 +47,9 @@ do
 done
 shift $((OPTIND - 1))
 
-if [ -z "${destination}" ]
+if [[ -z "${destination}" ]]
 then
     destination="$(mktemp -d)"
 fi
 
-generate_patch "${@}"
+generate_patch "${destination}" "${@}"
