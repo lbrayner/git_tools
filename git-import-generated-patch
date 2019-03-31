@@ -5,11 +5,11 @@
 script_name="$(basename "${0}")"
 
 print_usage() {
-	printf '\n%s\n' "${script_name} [-d FOLDER] -h"
+	printf '\n%s\n' "${script_name} [-d FOLDER] [-h]"
 }
 
 # where the patches are
-directory="."
+directory=""
 
 while getopts ":d:h" opt
 do
@@ -28,5 +28,11 @@ do
     esac
 done
 shift $((OPTIND - 1))
+
+if [[ -z "${directory}" ]]
+then
+    print_usage 1>&2
+    exit 1
+fi
 
 git am "${directory}"/*.patch
