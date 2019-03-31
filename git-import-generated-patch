@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# set -x
+
+script_name="$(basename "${0}")"
+
+print_usage() {
+	printf '\n%s\n' "${script_name} [-d FOLDER] -h"
+}
+
+origin="."
+
+while getopts ":d:h" opt
+do
+    case ${opt} in
+        d)
+            origin="${OPTARG}"
+            ;;
+        h)
+            print_usage
+            exit 0
+            ;;
+        \?)
+            echo "Unkown option." 1>&2
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+git am "${origin}"/*.patch

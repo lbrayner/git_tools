@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# set -x
+
+script_name="$(basename "${0}")"
+
+print_usage() {
+	printf '\n%s\n' "${script_name} [-d FOLDER] [GIT_OPTIONS] FILE..."
+}
+
+generate_patch() {
+    outdir="${destination}"
+    echo "${@}"
+    repo="."
+    cd "${repo}"
+    init_commit=$(git rev-list --parents HEAD | egrep "^[a-f0-9]{40}$")
+    first_commit=$(git -c log.abbrevCommit=false log "${@}" \
+        | grep '^commit' | tail -1 | awk '{print $2}')
+    commit="${first_commit}^"
+    if [ "${first_commit}" = "${init_commit}" ]
+    then
+        git format-patch -1 -o "${outdir}" \
+            ${init_commit} -- "${@}"
+        commit="${first_commit}"
+    fi
+    git format-patch -o "${outdir}" "${commit}"..HEAD "${@}"
+}
+
+if [ ! ${#} -gt 0 ]
+then
+    print_usage
+    exit 1
+fi
+
+destination=""
+
+while getopts ":d:" opt
+do
+    case ${opt} in
+        d)
+            destination="${OPTARG}"
+            ;;
+        \?)
+            echo "Unkown option." 1>&2
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+if [ -z "${destination}" ]
+then
+    destination="$(mktemp -d)"
+fi
+
+generate_patch "${@}"
