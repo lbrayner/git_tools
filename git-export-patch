@@ -2,10 +2,8 @@
 
 # set -x
 
-script_name="$(basename "${0}")"
-
 print_usage() {
-	printf '\n%s\n' "${script_name} [-d FOLDER] [GIT_OPTIONS] FILE..."
+	printf "\\n$(basename "${0}") [-d FOLDER] [GIT_OPTIONS] FILE...\\n"
 }
 
 generate_patch() {
@@ -18,7 +16,7 @@ generate_patch() {
     commit="${first_commit}^"
     if [[ "${first_commit}" = "${init_commit}" ]]
     then
-        git format-patch -1 -o "${outdir}" \
+        git format-patch --start-number 0 -1 -o "${outdir}" \
             ${init_commit} -- "${@}"
         commit="${first_commit}"
     fi

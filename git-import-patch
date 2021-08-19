@@ -2,10 +2,8 @@
 
 # set -x
 
-script_name="$(basename "${0}")"
-
 print_usage() {
-	printf '\n%s\n' "${script_name} [-d FOLDER] [-h]"
+	printf "\\n$(basename "${0}") -d FOLDER [-h]\\n"
 }
 
 # where the patches are
